@@ -382,18 +382,6 @@ class RepoCleaner(object):
             for error in self.errors:
                 print(error, file=sys.stderr)
     
-    # def delete_pkginfo_only(self):
-    #     '''Deletes pkginfo only from the repo, leaving pkgs intact'''
-    #     # remove old pkginfo only
-    #     for item in self.items_to_delete:
-    #         if 'resource_identifier' in item:
-    #             print('Removing %s' % item['resource_identifier'],
-    #                   file=sys.stderr)
-    #             try:
-    #                 self.repo.delete(item['resource_identifier'])
-    #             except munkirepo.RepoError as err:
-    #                 print(unicode_or_str(err), file=sys.stderr)
-
     def delete_items(self):
         '''Deletes items from the repo'''
         # remove old pkginfo and referenced pkgs
