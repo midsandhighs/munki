@@ -331,6 +331,15 @@ class RepoCleaner(object):
                     for item in item_list:
                         self.items_to_delete.append(item)
                         line_info = "[to be DELETED]"
+                if self.options.skip_pkgs:
+                    for item in item_list:
+                        if item['pkg_path']:
+                            self.pkgs_to_keep.remove(item['pkg_path'])
+                        if item['uninstallpkg_path']:
+                            self.pkgs_to_keep.remove(item['uninstallpkg_path'])
+                    line_info = "[pkginfo to be DELETED]"
+                else: 
+                    pass
                 if len(item_list) > 1:
                     line_info = (
                         "(multiple items share this version number) "
@@ -372,6 +381,18 @@ class RepoCleaner(object):
                   file=sys.stderr)
             for error in self.errors:
                 print(error, file=sys.stderr)
+    
+    # def delete_pkginfo_only(self):
+    #     '''Deletes pkginfo only from the repo, leaving pkgs intact'''
+    #     # remove old pkginfo only
+    #     for item in self.items_to_delete:
+    #         if 'resource_identifier' in item:
+    #             print('Removing %s' % item['resource_identifier'],
+    #                   file=sys.stderr)
+    #             try:
+    #                 self.repo.delete(item['resource_identifier'])
+    #             except munkirepo.RepoError as err:
+    #                 print(unicode_or_str(err), file=sys.stderr)
 
     def delete_items(self):
         '''Deletes items from the repo'''
@@ -408,7 +429,7 @@ class RepoCleaner(object):
                 self.repo.delete(pkg_to_remove)
             except munkirepo.RepoError as err:
                 print(unicode_or_str(err), file=sys.stderr)
-            
+
 
     def make_catalogs(self):
         """Calls makecatalogs to rebuild our catalogs"""
@@ -483,6 +504,8 @@ def main():
     parser.add_option('--delete-items-in-no-manifests', action='store_true',
                       help='Also delete items that are not referenced in any '
                            'manifests. Not yet implemented.')
+    parser.add_option('--skip-pkgs', action='store_true',
+                      help='Deletes .pkginfo while leaving installer files intact.')
     parser.add_option('--repo_url', '--repo-url',
                       help='Optional repo URL. If specified, overrides any '
                            'repo_url specified via --configure.')
